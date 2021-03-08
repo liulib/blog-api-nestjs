@@ -3,7 +3,7 @@
  * @Author       : liulib
  * @Date         : 2020-11-28 11:55:55
  * @LastEditors  : liulib
- * @LastEditTime : 2021-03-08 16:44:53
+ * @LastEditTime : 2021-03-08 17:14:56
  */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -13,6 +13,11 @@ import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ArticleModule } from './modules/article/article.module';
+import { CategoryModule } from './modules/category/category.module';
+import { CommentModule } from './modules/comment/comment.module';
+import { TagModule } from './modules/tag/tag.module';
+import { IpModule } from './modules/ip/ip.module';
 
 import customConfig from './config';
 
@@ -32,6 +37,11 @@ import customConfig from './config';
     RoleModule,
     MenuModule,
     AuthModule,
+    ArticleModule,
+    CategoryModule,
+    CommentModule,
+    TagModule,
+    IpModule,
   ],
   controllers: [],
   providers: [],
