@@ -1,10 +1,3 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2021-01-04 13:54:48
- * @LastEditors  : Please set LastEditors
- * @LastEditTime : 2021-04-21 10:29:37
- */
 import {
   Entity,
   Column,
@@ -13,11 +6,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
-  BeforeInsert,
-  BeforeUpdate,
 } from 'typeorm';
-
-import * as bcrypt from 'bcrypt';
 
 import { Role } from '../role/role.entity';
 
@@ -58,16 +47,6 @@ export class User {
 
   @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: string;
-
-  // @BeforeInsert()
-  // @BeforeUpdate()
-  // async hashPassWord() {
-  //   this.password = bcrypt.hashSync(this.password, 12);
-  // }
-
-  // async comparePassWord(password) {
-  //   return await bcrypt.compare(password, this.password);
-  // }
 
   @ManyToMany(
     () => Role,
