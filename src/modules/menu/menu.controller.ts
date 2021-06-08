@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto, UpdateMenuDto } from './menu.dto';
 
@@ -6,18 +6,18 @@ import { CreateMenuDto, UpdateMenuDto } from './menu.dto';
 export class MenuController {
   constructor(private menuService: MenuService) {}
 
-  @Post('create')
+  @Post()
   async create(@Body() cto: CreateMenuDto) {
     return this.menuService.create(cto);
   }
 
-  @Post('update')
+  @Post('updateById')
   async update(@Body() uto: UpdateMenuDto) {
-    return this.menuService.update(uto);
+    return this.menuService.updateById(uto);
   }
 
-  @Get('getMenuList')
-  async findListAndCount() {
+  @Get('getMenuAll')
+  async getMenuAll() {
     return this.menuService.findAll();
   }
 }

@@ -1,14 +1,6 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2021-01-28 23:27:34
- * @LastEditors  : liulib
- * @LastEditTime : 2021-01-28 23:48:10
- */
-
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt, VerifyCallback } from 'passport-jwt';
+import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JwtPayLoad } from '../auth.interface';
 import { UserService } from '../../user/user.service';
 

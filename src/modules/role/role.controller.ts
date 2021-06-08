@@ -30,4 +30,9 @@ export class RoleController {
   async getRoleList(@Query() qto: QueryRoleDto) {
     return this.roleService.findListAndCount(qto);
   }
+
+  @Get('getRoleAll')
+  async getRoleAll() {
+    return this.roleService.findAll();
+  }
 }

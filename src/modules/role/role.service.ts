@@ -16,6 +16,7 @@ import {
 
 import { MenuService } from '../menu/menu.service';
 import { ResponseData } from '../../common/interfaces/response.interface';
+import { pageData } from '../../common/interfaces/pageData.interface';
 
 @Injectable()
 export class RoleService {
@@ -116,10 +117,10 @@ export class RoleService {
    */
   async findListAndCount(
     queryOption: QueryRoleDto,
-  ): Promise<ResponseData<[Role[], number]>> {
+  ): Promise<ResponseData<pageData<Role>>> {
     try {
       const {
-        pageNumber = 1,
+        page = 1,
         pageSize = 10,
         roleName,
         isDelete,
@@ -127,22 +128,28 @@ export class RoleService {
         updated,
       } = queryOption;
 
+      const [number, size] = [Number(page), Number(pageSize)];
+
       const queryOptionList = [];
       if (roleName) queryOptionList.push('role.roleName LIKE :roleName');
-      if (status) queryOptionList.push('role.status = :status');
       if (isDelete) queryOptionList.push('role.isDelete = :isDelete');
       if (created) queryOptionList.push('role.created = :created');
       if (updated) queryOptionList.push('role.updated = :updated');
       const queryOptionStr = queryOptionList.join(' AND ');
 
-      const data = await getRepository(Role)
+      const [list, total] = await getRepository(Role)
         .createQueryBuilder('role')
+        .leftJoinAndSelect('role.menus', 'menu')
         .where(queryOptionStr, queryOption)
-        .skip((pageNumber - 1) * pageSize)
-        .take(pageSize)
+        .skip((number - 1) * size)
+        .take(size)
         .getManyAndCount();
 
-      return { code: 1, message: '查询成功', data: data };
+      return {
+        code: 1,
+        message: '查询成功',
+        data: { list, total, page: number, pageSize: size },
+      };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.OK);
     }
@@ -178,5 +185,19 @@ export class RoleService {
       await entityManager.save(role);
     });
     return { code: 1, message: '分配权限成功' };
+  }
+
+  /**
+   * @description: 查询全部角色
+   */
+  async findAll(): Promise<ResponseData<Role[]>> {
+    const roleList = await getRepository(Role)
+      .createQueryBuilder('role')
+      .getMany();
+    return {
+      code: 1,
+      message: '查询成功',
+      data: roleList,
+    };
   }
 }

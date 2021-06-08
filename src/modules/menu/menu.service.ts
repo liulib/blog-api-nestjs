@@ -46,7 +46,7 @@ export class MenuService {
    * @param {*}
    * @return {*}
    */
-  async update(uto): Promise<ResponseData<null>> {
+  async updateById(uto): Promise<ResponseData<null>> {
     try {
       const res = await getRepository(Menu)
         .createQueryBuilder('menu')

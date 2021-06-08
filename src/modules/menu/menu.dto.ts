@@ -3,13 +3,13 @@
  * @Author       : liulib
  * @Date         : 2021-01-04 14:18:38
  * @LastEditors  : liulib
- * @LastEditTime : 2021-03-08 15:13:45
+ * @LastEditTime : 2021-03-31 22:46:16
  */
 import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
 
 export class CreateMenuDto {
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   readonly parentId?: number;
   @IsNotEmpty({ message: '菜单名不能为空' })
   @IsString()

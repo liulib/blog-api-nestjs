@@ -1,11 +1,10 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2021-01-28 22:42:58
- * @LastEditors  : liulib
- * @LastEditTime : 2021-01-28 23:40:49
- */
 export interface JwtPayLoad {
   id: number;
+  account: string;
+}
+
+export interface LoginRes {
+  token: string;
+  menuList: any;
   username: string;
 }

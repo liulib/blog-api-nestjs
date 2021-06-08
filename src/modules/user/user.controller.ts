@@ -10,7 +10,7 @@ import {
 import { UserService } from './user.service';
 import {
   CreateUserDto,
-  DeployRoleDto,
+  UpdateUserDto,
   changePwdDto,
   QueryUserDto,
 } from './user.dto';
@@ -41,8 +41,8 @@ export class UserController {
     return this.userService.findListAndCount(qto);
   }
 
-  @Post('deployRole')
-  async deployRole(@Body() deployDto: DeployRoleDto) {
-    return this.userService.deployRole(deployDto);
+  @Post('updateUser')
+  async updateUser(@Body() updateDto: UpdateUserDto) {
+    return this.userService.updateUser(updateDto);
   }
 }

@@ -10,6 +10,12 @@ import { PermissionGuard, Perms } from './perms.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('getToken')
+  async getToken(@Body() data: LoginDto) {
+    const res = await this.authService.getToken(data);
+    return res;
+  }
+
   @Post('login')
   async login(@Body() data: LoginDto) {
     const res = await this.authService.login(data);
@@ -17,9 +23,10 @@ export class AuthController {
   }
 
   @Get('test')
-  @UseGuards(AuthGuard(), PermissionGuard)
-  @Perms('admin')
+  @UseGuards(AuthGuard('basic'), PermissionGuard)
+  @Perms('/system')
   async test(@User() user) {
+    console.log(user);
     return '验证';
   }
 }
