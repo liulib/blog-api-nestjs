@@ -1,10 +1,3 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2021-01-04 14:18:29
- * @LastEditors  : liulib
- * @LastEditTime : 2021-03-08 10:22:37
- */
 import {
   Entity,
   Column,

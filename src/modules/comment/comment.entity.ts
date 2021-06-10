@@ -12,16 +12,19 @@ export class Comment {
   id: number;
 
   @Column({ comment: '评论内容' })
-  commentContent: string;
+  content: string;
 
-  @Column({ comment: '上级ID', default: 0 })
-  parentId: number;
+  @Column({ comment: '回复ID 为0说明是父级评论', default: 0 })
+  replyId: number;
 
   @Column({ comment: '评论用户ID' })
   userId: number;
 
   @Column({ comment: '评论文章ID' })
   articleId: number;
+
+  @Column({ type: 'tinyint', comment: '是否删除 1删除 0未删除', default: 0 })
+  isDelete: number;
 
   @CreateDateColumn({ comment: '创建时间' })
   createdAt: string;

@@ -1,65 +1,58 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2021-01-04 14:09:44
- * @LastEditors  : liulib
- * @LastEditTime : 2021-04-01 13:39:51
- */
 import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+import { QueryOptionsDto } from '@/common/dto/queryOptionDto';
+import { Type } from 'class-transformer';
 
 export class CreateRoleDto {
+  @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty({ message: '角色名不能为空' })
   readonly roleName: string;
+  @ApiProperty({ type: String })
   @IsString()
   @IsOptional()
   readonly remark?: string;
+  @ApiProperty({ type: Number })
   @IsOptional()
   @IsNumber()
   readonly isDelete?: number;
 }
 
-export class UpdateRoleDto {
+export class UpdateRoleDto extends CreateRoleDto {
+  @ApiProperty({ type: Number })
   @IsNotEmpty({ message: '角色id不能为空' })
   @IsNumber()
   readonly id: number;
-  @IsNotEmpty({ message: '角色名不能为空' })
-  @IsString()
-  readonly roleName: string;
-  @IsString()
-  @IsOptional()
-  readonly remark?: string;
-  @IsNotEmpty({ message: '是否删除不能为空' })
-  @IsNumber()
-  readonly isDelete: number;
 }
 
-export class QueryRoleDto {
-  @IsNotEmpty({ message: 'page不能为空' })
-  @IsString()
-  readonly page: string;
-  @IsNotEmpty({ message: 'pageSize不能为空' })
-  @IsString()
-  readonly pageSize: string;
+export class QueryRoleDto extends QueryOptionsDto {
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
   @IsString()
-  readonly roleName?: string;
+  readonly roleName: string;
+  @ApiPropertyOptional({ type: Number })
+  @Type(() => Number)
+  @IsOptional()
+  @IsNumber()
+  readonly isDelete: number;
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
   @IsString()
-  readonly isDelete?: string;
+  readonly created: string;
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
   @IsString()
-  readonly created?: string;
-  @IsOptional()
-  @IsString()
-  readonly updated?: string;
+  readonly updated: string;
 }
 
 export class DeployMenuDto {
+  @ApiProperty({ type: Number })
   @IsNotEmpty({ message: '用户id不能为空' })
   @IsNumber()
   readonly id: number;
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
   @IsString()
-  readonly menus?: string;
+  readonly menus: string;
 }

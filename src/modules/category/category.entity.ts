@@ -17,11 +17,14 @@ export class Category {
   @Column({ comment: '分类名称', length: 32 })
   categoryName: string;
 
-  @Column({ comment: '分类描述', length: 128 })
+  @Column({ comment: '分类描述', length: 64, default: '' })
   categoryDes: string;
 
   @Column({ comment: '上级ID', default: 0 })
   parentId: number;
+
+  @Column({ type: 'tinyint', comment: '是否删除 1删除 0未删除', default: 0 })
+  isDelete: number;
 
   // 外键关系
   @OneToMany(

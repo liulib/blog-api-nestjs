@@ -1,11 +1,4 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2021-01-05 14:49:48
- * @LastEditors  : liulib
- * @LastEditTime : 2021-01-05 15:25:43
- */
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 const saltRounds = 10;
 

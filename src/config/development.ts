@@ -1,10 +1,3 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2020-12-02 09:35:49
- * @LastEditors  : liulib
- * @LastEditTime : 2020-12-02 10:39:57
- */
 import { join } from 'path';
 export default {
   // 端口

@@ -25,19 +25,19 @@ export class Article {
   @Column({ comment: '文章简介', length: 128 })
   brief: string;
 
-  @Column({ comment: '文章简介图片URL', length: 128 })
+  @Column({ comment: '文章简介图片URL', length: 128, default: '' })
   briefUrl: string;
 
   @Column({ type: 'text', comment: '文章内容' })
   content: string;
 
-  @Column({ comment: '文章浏览数' })
+  @Column({ comment: '文章浏览数', default: 0 })
   viewCount: number;
 
-  @Column({ comment: '文章点赞数' })
+  @Column({ comment: '文章点赞数', default: 0 })
   thumbsUpCount: number;
 
-  @Column({ comment: '是否删除 1删除 0未删除', default: 0 })
+  @Column({ type: 'tinyint', comment: '是否删除 1删除 0未删除', default: 0 })
   isDelete: number;
 
   // 外键关系

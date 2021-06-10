@@ -1,10 +1,3 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2020-12-04 09:57:35
- * @LastEditors  : liulib
- * @LastEditTime : 2021-03-08 11:14:49
- */
 import {
   Injectable,
   NestInterceptor,
@@ -13,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { ResponseData } from '../../common/interfaces/response.interface';
+import { ResponseData } from '@/common/interfaces/response.interface';
 interface Response<ResponseData> {
   data: ResponseData;
 }

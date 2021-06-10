@@ -6,7 +6,7 @@ import { CreateMenuDto, UpdateMenuDto } from './menu.dto';
 export class MenuController {
   constructor(private menuService: MenuService) {}
 
-  @Post()
+  @Post('create')
   async create(@Body() cto: CreateMenuDto) {
     return this.menuService.create(cto);
   }

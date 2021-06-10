@@ -1,10 +1,3 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2020-12-04 09:49:03
- * @LastEditors  : liulib
- * @LastEditTime : 2021-03-08 10:30:38
- */
 import {
   ArgumentsHost,
   Catch,

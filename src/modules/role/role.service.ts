@@ -15,8 +15,8 @@ import {
 } from './role.dto';
 
 import { MenuService } from '../menu/menu.service';
-import { ResponseData } from '../../common/interfaces/response.interface';
-import { pageData } from '../../common/interfaces/pageData.interface';
+import { ResponseData } from '@/common/interfaces/response.interface';
+import { pageData } from '@/common/interfaces/pageData.interface';
 
 @Injectable()
 export class RoleService {
@@ -171,7 +171,7 @@ export class RoleService {
     if (!role) throw new NotFoundException('角色不存在');
 
     // 遍历菜单权限
-    if (menus.replace(/(^\s*)|(\s*$)/g, '') !== '') {
+    if (menus && menus.replace(/(^\s*)|(\s*$)/g, '') !== '') {
       menuIdList = menus.split(',');
     }
 

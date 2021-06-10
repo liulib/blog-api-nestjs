@@ -1,10 +1,3 @@
-/*
- * @Des          :
- * @Author       : liulib
- * @Date         : 2020-12-02 09:36:13
- * @LastEditors  : liulib
- * @LastEditTime : 2021-03-08 16:45:21
- */
 export default {
   // 端口
   port: parseInt(process.env.PORT, 10) || 3000,

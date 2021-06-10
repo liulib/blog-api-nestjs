@@ -11,7 +11,7 @@ import {
 export class RoleController {
   constructor(private roleService: RoleService) {}
 
-  @Post()
+  @Post('create')
   async create(@Body() cto: CreateRoleDto) {
     return this.roleService.create(cto);
   }

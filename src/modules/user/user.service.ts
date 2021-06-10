@@ -23,10 +23,10 @@ import {
 
 import { RoleService } from '../role/role.service';
 
-import { ResponseData } from '../../common/interfaces/response.interface';
-import { pageData } from '../../common/interfaces/pageData.interface';
+import { ResponseData } from '@/common/interfaces/response.interface';
+import { pageData } from '@/common/interfaces/pageData.interface';
 
-import { hashPassword, comparePassword } from '../../common/utils/bcrypt';
+import { hashPassword } from '@/common/utils/bcrypt';
 
 @Injectable()
 export class UserService {
@@ -61,7 +61,7 @@ export class UserService {
         roleIdList = roles.split(',');
       }
 
-      //hash密码
+      // hash密码
       const hashedPassword = hashPassword(password);
 
       await getManager().transaction(async (entityManager: EntityManager) => {
@@ -85,6 +85,7 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
   /**
    * @description: 根据用户名查找用户详细信息
    * @param {*}
@@ -272,6 +273,7 @@ export class UserService {
       }
       await entityManager.save(user);
     });
+
     return {
       code: 1,
       message: '修改成功',

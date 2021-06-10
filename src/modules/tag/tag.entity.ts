@@ -18,8 +18,11 @@ export class Tag {
   @Column({ comment: '标签名', length: 32 })
   tagName: string;
 
-  @Column({ comment: '标签描述', length: 64 })
+  @Column({ comment: '标签描述', length: 64, default: '' })
   tagDes: string;
+
+  @Column({ type: 'tinyint', comment: '是否删除 1删除 0未删除', default: 0 })
+  isDelete: number;
 
   @ApiProperty()
   @ManyToMany(

@@ -20,7 +20,7 @@ import { User } from './user.entity';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post()
+  @Post('create')
   async create(@Body() cto: CreateUserDto) {
     return this.userService.create(cto);
   }
