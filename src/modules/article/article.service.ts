@@ -29,6 +29,8 @@ import {
 
 import { TagService } from '../tag/tag.service';
 import { CategoryService } from '../category/category.service';
+import { vLogService } from '@/modules/vLog/vLog.service';
+
 @Injectable()
 export class ArticleService {
   constructor(
@@ -36,6 +38,7 @@ export class ArticleService {
     private articleRepository: Repository<Article>,
     private readonly tagService: TagService,
     private readonly categoryService: CategoryService,
+    private readonly v_logService: vLogService,
   ) {}
 
   /**
@@ -184,6 +187,7 @@ export class ArticleService {
    */
   async findDetailById(
     id: QueryArticleDetailDto,
+    req,
   ): Promise<ResponseData<Article>> {
     const article = await getRepository(Article)
       .createQueryBuilder('article')
@@ -196,6 +200,9 @@ export class ArticleService {
       viewCount: article.viewCount + 1,
     });
     await this.articleRepository.save(updatedArticle);
+
+    // 记录访问信息
+    this.v_logService.create(req);
 
     if (!article) return { code: 0, message: '查询失败，文章不存在' };
     return { code: 1, message: '查询成功', data: article };

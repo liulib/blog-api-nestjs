@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, Request } from '@nestjs/common';
 
 import { ArticleService } from './article.service';
 
@@ -29,7 +29,7 @@ export class ArticleController {
   }
 
   @Get('getDetailById')
-  async findDetailById(@Query() qto: QueryArticleDetailDto) {
-    return this.articleService.findDetailById(qto);
+  async findDetailById(@Query() qto: QueryArticleDetailDto, @Request() req) {
+    return this.articleService.findDetailById(qto, req);
   }
 }

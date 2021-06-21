@@ -3,7 +3,7 @@
  * @Author       : liulib
  * @Date         : 2020-11-28 11:55:55
  * @LastEditors  : Please set LastEditors
- * @LastEditTime : 2021-06-08 10:52:08
+ * @LastEditTime : 2021-06-17 16:27:44
  */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -18,6 +18,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { TagModule } from './modules/tag/tag.module';
 import { IpModule } from './modules/ip/ip.module';
+import { vLogModule } from './modules/vLog/vLog.module';
 import customConfig from './config';
 
 @Module({
@@ -41,6 +42,7 @@ import customConfig from './config';
     CommentModule,
     TagModule,
     IpModule,
+    vLogModule,
   ],
   controllers: [],
   providers: [],
