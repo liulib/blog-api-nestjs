@@ -26,6 +26,10 @@ export class CreateMenuDto {
   @IsString()
   @IsOptional()
   readonly perms: string;
+  @ApiPropertyOptional({ type: Number })
+  @IsNumber()
+  @IsOptional()
+  readonly order: number;
   @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()

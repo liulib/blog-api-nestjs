@@ -32,6 +32,9 @@ export class Menu {
   @Column({ comment: '权限标志', default: null })
   perms: string;
 
+  @Column({ comment: '排序', default: 0 })
+  order: number;
+
   @Column({ comment: '备注', nullable: true })
   remark: string;
 
