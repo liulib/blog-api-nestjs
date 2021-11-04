@@ -28,8 +28,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('doc', app, document);
 
-  await app.listen(3000, () => {
-    Logger.log('服务已经启动,请访问localhost:3000');
+  await app.listen(9002, () => {
+    Logger.log('服务已经启动,请访问http://127.0.0.1:9002/');
   });
 }
 bootstrap();
