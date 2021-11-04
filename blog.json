@@ -1,0 +1,21 @@
+{
+    "apps": [
+        {
+            "name": "blog",
+            "cwd": "./",
+            "script": "./dist/main.js",
+            "log_date_format": "YYYY-MM-DD HH:mm Z",
+            "error_file": "./logs/app-err.log",
+            "out_file": "/dev/null",
+            "exec_mode": "cluster",
+            "watch": true,
+            "ignore_watch": "./logs",
+            "env": {
+                "COMMON_VARIABLE": "true"
+            },
+            "env_production": {
+                "NODE_ENV": "production"
+            }
+        }
+    ]
+}
