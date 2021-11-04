@@ -53,7 +53,7 @@ export class UserService {
         .getOne();
 
       if (user) {
-        throw new HttpException(`账号已存在`, HttpStatus.BAD_REQUEST);
+        throw new HttpException(`账号已存在`, HttpStatus.OK);
       }
 
       // 遍历角色
@@ -82,7 +82,7 @@ export class UserService {
       });
       return { code: 1, message: '创建成功' };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, HttpStatus.OK);
     }
   }
 
@@ -92,16 +92,13 @@ export class UserService {
    * @return {*}
    */
   async findDetailByName(account: string): Promise<User> {
-    const entity = await getRepository(User)
+    return await getRepository(User)
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'role')
       .leftJoinAndSelect('role.menus', 'menu')
       .addSelect('user.password')
       .where('user.account = :account', { account: account })
       .getOne();
-
-    if (!entity) throw new NotFoundException('用户不存在');
-    return entity;
   }
 
   /**
@@ -125,15 +122,12 @@ export class UserService {
    * @return {*}
    */
   async findOneById(id: number): Promise<User> {
-    const entity = await getRepository(User)
+    return await getRepository(User)
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'role')
       .leftJoinAndSelect('role.menus', 'menu')
       .where('user.id = :id', { id: id })
       .getOne();
-
-    if (!entity) throw new NotFoundException('用户不存在');
-    return entity;
   }
 
   /**
@@ -182,6 +176,7 @@ export class UserService {
       data: { list, total, page: number, pageSize: size },
     };
   }
+
   /**
    * @description: 给用户分配角色
    * @param {deployRoleDto} deployDto
@@ -192,6 +187,7 @@ export class UserService {
 
     // 查找用户
     const user = await this.findOneById(id);
+    if (!user) return { code: 0, message: '用户不存在' };
 
     // 遍历角色
     if (roles.replace(/(^\s*)|(\s*$)/g, '') !== '') {
@@ -218,9 +214,11 @@ export class UserService {
   async changePwd(changePDto: changePwdDto): Promise<ResponseData<null>> {
     const { id, password } = changePDto;
     try {
+      // 检测用户是否存在
       const toUpdate = await this.findOneById(id);
+      if (!toUpdate) return { code: 0, message: '用户不存在' };
 
-      //hash密码
+      // hash密码
       const hashedPassword = hashPassword(password);
 
       const updated = Object.assign(toUpdate, { password: hashedPassword });
@@ -229,7 +227,7 @@ export class UserService {
 
       return { code: 1, message: '修改成功' };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, HttpStatus.OK);
     }
   }
 
@@ -263,7 +261,8 @@ export class UserService {
           id: id,
         })
         .getOne();
-      if (!user) throw new NotFoundException('用户不存在');
+
+      if (!user) return { code: 0, message: '用户不存在' };
 
       // 赋值角色
       if (roleIdList.length > 0) {

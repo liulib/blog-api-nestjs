@@ -8,7 +8,7 @@ import { ResponseData } from '../../common/interfaces/response.interface';
 
 import { Menu } from '../menu/menu.entity';
 
-import { hashPassword, comparePassword } from '../../common/utils/bcrypt';
+import { comparePassword } from '../../common/utils/bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -24,15 +24,9 @@ export class AuthService {
    */
   async login(data: LoginDto): Promise<ResponseData<LoginRes>> {
     const { account, password } = data;
-
     const entity = await this.userService.findDetailByName(account);
 
-    if (!entity) {
-      return {
-        code: 0,
-        message: '用户名不存在',
-      };
-    }
+    if (!entity) return { code: 0, message: '用户名不存在' };
 
     if (!(await comparePassword(password, entity.password))) {
       return {

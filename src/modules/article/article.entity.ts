@@ -22,7 +22,7 @@ export class Article {
   @Column({ comment: '文章标题', length: 64 })
   title: string;
 
-  @Column({ comment: '文章简介', length: 128 })
+  @Column({ type: 'text', comment: '文章简介' })
   brief: string;
 
   @Column({ comment: '文章简介图片URL', length: 128, default: '' })

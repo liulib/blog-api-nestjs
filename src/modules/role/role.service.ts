@@ -39,7 +39,7 @@ export class RoleService {
         .where('role.roleName = :roleName', { roleName: cto.roleName })
         .getOne();
       if (role) {
-        throw new HttpException(`角色名已存在`, HttpStatus.OK);
+        return { code: 0, message: '角色名已存在' };
       }
       // 创建角色
       await getRepository(Role)

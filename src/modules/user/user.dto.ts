@@ -73,6 +73,11 @@ export class UpdateUserDto {
   @ApiPropertyOptional({ type: String })
   @IsOptional()
   @IsString()
+  readonly username?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsString()
   readonly email?: string;
 
   @ApiPropertyOptional({ type: String })

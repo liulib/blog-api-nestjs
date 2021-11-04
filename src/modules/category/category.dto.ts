@@ -14,11 +14,6 @@ export class CreateCategoryDto {
   readonly categoryDes: string;
 
   @ApiProperty({ type: Number })
-  @IsNotEmpty({ message: '父级ID不能为空' })
-  @IsNumber()
-  readonly parentId: number;
-
-  @ApiProperty({ type: Number })
   @IsNotEmpty({ message: '分类是否删除不能为空' })
   @IsNumber()
   readonly isDelete: number;

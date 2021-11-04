@@ -27,9 +27,10 @@ import {
   QueryArticleDetailDto,
 } from './article.dto';
 
-import { TagService } from '../tag/tag.service';
-import { CategoryService } from '../category/category.service';
+import { TagService } from '@/modules/tag/tag.service';
+import { CategoryService } from '@/modules/category/category.service';
 import { vLogService } from '@/modules/vLog/vLog.service';
+import { CommentService } from '@/modules/comment/comment.service';
 
 @Injectable()
 export class ArticleService {
@@ -39,6 +40,7 @@ export class ArticleService {
     private readonly tagService: TagService,
     private readonly categoryService: CategoryService,
     private readonly v_logService: vLogService,
+    private readonly commentService: CommentService,
   ) {}
 
   /**
@@ -159,6 +161,8 @@ export class ArticleService {
         .createQueryBuilder('article')
         .where(queryOptionStr, queryOption)
         .innerJoin('article.tags', 'tag', 'tag.id = :tagId', { tagId })
+        .leftJoinAndSelect('article.tags', 'tags')
+        .leftJoinAndSelect('article.category', 'category')
         .skip((number - 1) * size)
         .take(size)
         .getManyAndCount();
@@ -166,12 +170,22 @@ export class ArticleService {
       res = await getRepository(Article)
         .createQueryBuilder('article')
         .where(queryOptionStr, queryOption)
+        .leftJoinAndSelect('article.tags', 'tags')
+        .leftJoinAndSelect('article.category', 'category')
         .skip((number - 1) * size)
         .take(size)
         .getManyAndCount();
     }
 
     const [list, total] = res;
+
+    // 遍历查询当前文章的评论数
+    // forEach无法使用async await
+    for (let i = 0; i < list.length; i++) {
+      list[i].commentCount = await this.commentService.countTotalByArticleId(
+        list[i].id,
+      );
+    }
 
     return {
       code: 1,

@@ -17,11 +17,6 @@ export class CreateArticleDto {
   @IsString()
   readonly brief: string;
 
-  @ApiPropertyOptional({ type: String })
-  @IsOptional()
-  @IsString()
-  readonly briefUrl: string;
-
   @ApiProperty({ type: String })
   @IsNotEmpty({ message: '文章内容不能为空' })
   @IsString()
