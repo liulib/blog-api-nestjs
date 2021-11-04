@@ -92,4 +92,18 @@ export class CommentService {
       },
     };
   }
+
+  /**
+   * @description: 根据文章ID获取评论数，用于给首页接口提供评论数量。 PS:只统计顶级评论
+   * @param {number} articleId
+   * @return {*}
+   */
+  async countTotalByArticleId(articleId: number): Promise<number> {
+    // 获取顶级评论
+    return await getRepository(Comment)
+      .createQueryBuilder('comment')
+      .where('comment.articleId = :articleId', { articleId })
+      .andWhere('comment.replyId = 0')
+      .getCount();
+  }
 }
