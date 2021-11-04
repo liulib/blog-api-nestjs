@@ -21,6 +21,9 @@ export class Tag {
   @Column({ comment: '标签描述', length: 64, default: '' })
   tagDes: string;
 
+  @Column({ comment: '标签颜色', length: 64, default: '' })
+  tagColor: string;
+
   @Column({ type: 'tinyint', comment: '是否删除 1删除 0未删除', default: 0 })
   isDelete: number;
 

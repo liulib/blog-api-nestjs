@@ -13,6 +13,11 @@ export class CreateTagDto {
   @IsString()
   readonly tagDes: string;
 
+  @ApiProperty({ type: String })
+  @IsNotEmpty({ message: '标签颜色不能为空' })
+  @IsString()
+  readonly tagColor: string;
+
   @ApiProperty({ type: Number })
   @IsNotEmpty({ message: '标签是否删除不能为空' })
   @IsNumber()
