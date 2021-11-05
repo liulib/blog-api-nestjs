@@ -159,6 +159,7 @@ export class ArticleService {
     if (tagId) {
       res = await getRepository(Article)
         .createQueryBuilder('article')
+        .orderBy('article.createdAt', 'DESC')
         .where(queryOptionStr, queryOption)
         .innerJoin('article.tags', 'tag', 'tag.id = :tagId', { tagId })
         .leftJoinAndSelect('article.tags', 'tags')
@@ -169,6 +170,7 @@ export class ArticleService {
     } else {
       res = await getRepository(Article)
         .createQueryBuilder('article')
+        .orderBy('article.createdAt', 'DESC')
         .where(queryOptionStr, queryOption)
         .leftJoinAndSelect('article.tags', 'tags')
         .leftJoinAndSelect('article.category', 'category')
