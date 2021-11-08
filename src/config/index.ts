@@ -1,6 +1,12 @@
 import developmentConfig from './development';
 import productionConfig from './production';
 
+export interface IConfig {
+  port: number;
+  enableSwagger: boolean;
+  DATABASE_CONFIG: any;
+}
+
 const configs = {
   development: developmentConfig,
   production: productionConfig,
@@ -8,4 +14,6 @@ const configs = {
 
 const env = process.env.NODE_ENV || 'development';
 
-export default () => configs[env];
+const getConfig: () => IConfig = () => configs[env];
+
+export default getConfig;

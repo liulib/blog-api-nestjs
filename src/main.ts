@@ -7,6 +7,8 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+import customConfig from './config';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -20,16 +22,18 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   // 配置swagger文档
-  const options = new DocumentBuilder()
-    .setTitle('blog文档')
-    .setVersion('1.0')
-    .addTag('blog1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('doc', app, document);
+  if (customConfig().enableSwagger) {
+    const options = new DocumentBuilder()
+      .setTitle('blog文档')
+      .setVersion('1.0')
+      .addTag('blog1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup('doc', app, document);
+  }
 
-  await app.listen(9002, () => {
-    Logger.log('服务已经启动,请访问http://127.0.0.1:9002/');
+  await app.listen(customConfig().port, () => {
+    Logger.log(`服务已经启动,请访问http://127.0.0.1:${customConfig().port}/`);
   });
 }
 bootstrap();

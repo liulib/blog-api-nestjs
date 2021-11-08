@@ -1,5 +1,7 @@
 import { join } from 'path';
-export default {
+import { IConfig } from './index';
+
+const config: IConfig = {
   // 端口
   port: parseInt(process.env.PORT, 10) || 3000,
   // 是否开启swagger
@@ -19,3 +21,5 @@ export default {
     logging: true,
   },
 };
+
+export default config;
