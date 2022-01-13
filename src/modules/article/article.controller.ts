@@ -32,4 +32,9 @@ export class ArticleController {
   async findDetailById(@Query() qto: QueryArticleDetailDto, @Request() req) {
     return this.articleService.findDetailById(qto, req);
   }
+
+  @Get('getTopicList')
+  async findTopicList() {
+    return this.articleService.findTopicList();
+  }
 }

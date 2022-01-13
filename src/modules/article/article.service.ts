@@ -223,4 +223,19 @@ export class ArticleService {
     if (!article) return { code: 0, message: '查询失败，文章不存在' };
     return { code: 1, message: '查询成功', data: article };
   }
+
+  /**
+   * @description: 查询热门文章
+   */
+
+  async findTopicList() {
+    const res = await getRepository(Article)
+      .createQueryBuilder('article')
+      .orderBy('article.viewCount', 'DESC')
+      .select(['article.id', 'article.title'])
+      .skip(0)
+      .take(5)
+      .getMany();
+    return { code: 1, message: '查询成功', data: res };
+  }
 }
