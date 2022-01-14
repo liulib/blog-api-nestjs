@@ -37,10 +37,8 @@ export class CategoryController {
     summary: '查询所有分类不分页',
   })
   @ApiOkResponse({ type: Category })
-  @UseGuards(AuthGuard('jwt'), PermissionGuard)
-  @Perms('/admin/system/category/findList')
-  @Get('findList')
-  async findList() {
-    return this.categoryService.findList();
+  @Get('findAll')
+  async findAll() {
+    return this.categoryService.findAll();
   }
 }

@@ -57,7 +57,7 @@ export class CategoryService {
   }
 
   // 获取所有分类
-  async findList(): Promise<ResponseData<Category[]>> {
+  async findAll(): Promise<ResponseData<Category[]>> {
     const categoryList = await getRepository(Category)
       .createQueryBuilder('category')
       .getMany();
