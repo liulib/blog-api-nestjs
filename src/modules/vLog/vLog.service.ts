@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { vLog } from './vLog.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository } from 'typeorm';
@@ -20,52 +20,40 @@ export class vLogService {
     private readonly ipService: IpService,
   ) {}
 
-  /**
-   * @description: 创建vLog
-   * @param {*}
-   * @return {*}
-   */
+  // 创建vLog
   async create(req) {
-    try {
-      const { url, headers } = req;
-      // 获取请求IP 需要使用nginx配合
-      const ip = headers['x-real-ip'];
-      // 解析请求头
-      const userAgent = parseUserAgent(headers['user-agent']);
+    const { url, headers } = req;
+    // 获取请求IP 需要使用nginx配合
+    const ip = headers['x-real-ip'];
+    // 解析请求头
+    const userAgent = parseUserAgent(headers['user-agent']);
 
-      // 记录IP
-      await this.ipService.create(ip);
+    // 记录IP
+    await this.ipService.create(ip);
 
-      // 查找是否已经存在这条记录 存在则增加计次 否则新建
-      const exist = await this.vLogRepository.findOne({
-        where: { ip, userAgent: headers['user-agent'], url },
+    // 查找是否已经存在这条记录 存在则增加计次 否则新建
+    const exist = await this.vLogRepository.findOne({
+      where: { ip, userAgent: headers['user-agent'], url },
+    });
+
+    if (exist) {
+      const count = exist.count;
+      const newData = await this.vLogRepository.merge(exist, {
+        count: count + 1,
       });
-
-      if (exist) {
-        const count = exist.count;
-        const newData = await this.vLogRepository.merge(exist, {
-          count: count + 1,
-        });
-        await this.vLogRepository.save(newData);
-      } else {
-        const newData = await this.vLogRepository.create({
-          ip,
-          userAgent: headers['user-agent'],
-          url,
-          ...userAgent,
-        });
-        await this.vLogRepository.save(newData);
-      }
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      await this.vLogRepository.save(newData);
+    } else {
+      const newData = await this.vLogRepository.create({
+        ip,
+        userAgent: headers['user-agent'],
+        url,
+        ...userAgent,
+      });
+      await this.vLogRepository.save(newData);
     }
   }
 
-  /**
-   * @description: 根据条件查找浏览记录 分页
-   * @param {*}
-   * @return {*}
-   */
+  // 根据条件查找浏览记录 分页
   async findListAndCount(
     queryOption: QueryOptionDto,
   ): Promise<ResponseData<pageData<vLog>>> {
