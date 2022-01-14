@@ -14,12 +14,7 @@ export class CommentService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  /**
-   * @description: 创建评论
-   * @param {CreateCommentDto} data
-   * @param {*} user
-   * @return {*}
-   */
+  // 创建评论
   async create(data: CreateCommentDto, user): Promise<ResponseData<null>> {
     // 解构用户ID
     const { id: userId } = user;
@@ -38,11 +33,7 @@ export class CommentService {
     };
   }
 
-  /**
-   * @description: 分页获取当前文章的评论
-   * @param {*}
-   * @return {*}
-   */
+  // 分页获取当前文章的评论
   async findListByArticleId(
     queryOption: QueryOptionDto,
   ): Promise<ResponseData<pageData<Comment>>> {
@@ -93,11 +84,7 @@ export class CommentService {
     };
   }
 
-  /**
-   * @description: 根据文章ID获取评论数，用于给首页接口提供评论数量。 PS:只统计顶级评论
-   * @param {number} articleId
-   * @return {*}
-   */
+  // 根据文章ID获取评论数，用于给首页接口提供评论数量。 PS:只统计顶级评论
   async countTotalByArticleId(articleId: number): Promise<number> {
     // 获取顶级评论
     return await getRepository(Comment)
