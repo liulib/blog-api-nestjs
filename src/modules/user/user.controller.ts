@@ -26,14 +26,11 @@ export class UserController {
   @ApiOperation({
     summary: '创建用户',
   })
-  @UseGuards(AuthGuard(), PermissionGuard)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Perms('/admin/system/user/create')
   @Post('create')
   async create(@Body() cto: CreateUserDto): Promise<ResponseData<null>> {
     const res = await this.userService.create(cto);
-    console.log('create');
-    console.log(res);
-
     if (res) {
       return { code: 1, message: '创建成功' };
     } else {
@@ -45,7 +42,7 @@ export class UserController {
     summary: '根据用户id查找用户 带角色和菜单',
   })
   @ApiOkResponse({ type: User })
-  @UseGuards(AuthGuard(), PermissionGuard)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Perms('/admin/system/user/getById')
   @Get('getById')
   async getById(@Query() dto: FindByIdDto): Promise<ResponseData<User>> {
@@ -60,7 +57,7 @@ export class UserController {
   @ApiOperation({
     summary: '根据用户id修改密码',
   })
-  @UseGuards(AuthGuard(), PermissionGuard)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Perms('/admin/system/user/changePwd')
   @Post('changePwd')
   async changePwd(
@@ -74,7 +71,7 @@ export class UserController {
     summary: '获取用户列表',
   })
   @ApiOkResponse({ type: User })
-  @UseGuards(AuthGuard(), PermissionGuard)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Perms('/admin/system/user/getUserList')
   @Get('getUserList')
   async getList(
@@ -91,7 +88,7 @@ export class UserController {
   @ApiOperation({
     summary: '根据用户id更新用户',
   })
-  @UseGuards(AuthGuard(), PermissionGuard)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Perms('/admin/system/user/updateUser')
   @Post('updateUser')
   async updateUser(
