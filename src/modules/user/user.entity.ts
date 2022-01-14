@@ -13,12 +13,14 @@ import { Role } from '../role/role.entity';
 
 @Entity()
 export class User {
-  @ApiProperty()
+  @ApiProperty({
+    description: '用户id',
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
   @ApiProperty({
-    description: '用户名 最长30',
+    description: '用户名 长度0-30',
   })
   @Column({ comment: '用户名', length: 30 })
   username: string;
