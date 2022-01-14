@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsInt,
+  Min,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { QueryOptionsDto } from '@/common/dto/queryOptionDto';
@@ -51,6 +58,7 @@ export class DeployMenuDto {
   @IsNotEmpty({ message: '用户id不能为空' })
   @IsNumber()
   readonly id: number;
+
   @ApiPropertyOptional({ type: String })
   @IsOptional()
   @IsString()

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Repository,
@@ -24,7 +19,6 @@ import {
 import { RoleService } from '../role/role.service';
 
 import { ResponseData } from '@/common/interfaces/response.interface';
-import { pageData } from '@/common/interfaces/pageData.interface';
 
 import { hashPassword } from '@/common/utils/bcrypt';
 
@@ -36,12 +30,8 @@ export class UserService {
     private readonly roleService: RoleService,
   ) {}
 
-  /**
-   * @description: 创建用户
-   * @param {*} user
-   * @return {*}
-   */
-  async create(data: CreateUserDto): Promise<ResponseData<null>> {
+  // 创建用户
+  async create(data: CreateUserDto): Promise<boolean> {
     try {
       const { account, roles = '', password, ...others } = data;
       let roleIdList = [];
@@ -53,7 +43,7 @@ export class UserService {
         .getOne();
 
       if (user) {
-        throw new HttpException(`账号已存在`, HttpStatus.OK);
+        return false;
       }
 
       // 遍历角色
@@ -79,18 +69,15 @@ export class UserService {
         }
         // 保存关联关系
         await entityManager.save(user);
+
+        return true;
       });
-      return { code: 1, message: '创建成功' };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.OK);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  /**
-   * @description: 根据用户名查找用户详细信息
-   * @param {*}
-   * @return {*}
-   */
+  // 根据用户名查找用户详细信息;
   async findDetailByName(account: string): Promise<User> {
     return await getRepository(User)
       .createQueryBuilder('user')
@@ -101,11 +88,7 @@ export class UserService {
       .getOne();
   }
 
-  /**
-   * @description: 根据用户账号查找用户
-   * @param {*}
-   * @return {*}
-   */
+  // 根据用户账号查找用户;
   async findOneByName(account: string): Promise<User> {
     return await getRepository(User)
       .createQueryBuilder('user')
@@ -116,11 +99,7 @@ export class UserService {
       .getOne();
   }
 
-  /**
-   * @description: 根据用户id查找用户 带角色和菜单
-   * @param {*}
-   * @return {*}
-   */
+  // 根据用户id查找用户 带角色和菜单
   async findOneById(id: number): Promise<User> {
     return await getRepository(User)
       .createQueryBuilder('user')
@@ -130,14 +109,8 @@ export class UserService {
       .getOne();
   }
 
-  /**
-   * @description: 获取用户列表
-   * @param {*}
-   * @return {*}
-   */
-  async findListAndCount(
-    queryOption: QueryUserDto,
-  ): Promise<ResponseData<pageData<User>>> {
+  // 获取用户列表
+  async findListAndCount(queryOption: QueryUserDto) {
     const {
       page = 1,
       pageSize = 10,
@@ -170,17 +143,10 @@ export class UserService {
       .take(size)
       .getManyAndCount();
 
-    return {
-      code: 1,
-      message: '查询成功',
-      data: { list, total, page: number, pageSize: size },
-    };
+    return { list, total, page: number, pageSize: size };
   }
 
-  /**
-   * @description: 给用户分配角色
-   * @param {deployRoleDto} deployDto
-   */
+  // 给用户分配角色;
   async deployRole(deployDto: DeployRoleDto): Promise<ResponseData<null>> {
     const { id, roles = '' } = deployDto;
     let roleIdList = [];
@@ -207,11 +173,8 @@ export class UserService {
     return { code: 1, message: '分配角色成功' };
   }
 
-  /**
-   * @description: 修改用户密码
-   * @param {changePwdDto} changePwdDto
-   */
-  async changePwd(changePDto: changePwdDto): Promise<ResponseData<null>> {
+  // 修改用户密码
+  async changePwd(changePDto: changePwdDto) {
     const { id, password } = changePDto;
     try {
       // 检测用户是否存在
@@ -224,16 +187,12 @@ export class UserService {
       const updated = Object.assign(toUpdate, { password: hashedPassword });
 
       await getRepository(User).save(updated);
-
-      return { code: 1, message: '修改成功' };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.OK);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  /**
-   * @description: 更新用户
-   */
+  // 更新用户
   async updateUser(updateDto: UpdateUserDto) {
     const { id, roles = '', ...others } = updateDto;
     let roleIdList = [];
@@ -241,6 +200,7 @@ export class UserService {
     if (roles.replace(/(^\s*)|(\s*$)/g, '') !== '') {
       roleIdList = roles.split(',');
     }
+
     await getManager().transaction(async (entityManager: EntityManager) => {
       // 更新用户
       // await entityManager.update(User, id, others);
@@ -272,10 +232,5 @@ export class UserService {
       }
       await entityManager.save(user);
     });
-
-    return {
-      code: 1,
-      message: '修改成功',
-    };
   }
 }

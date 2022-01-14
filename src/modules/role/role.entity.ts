@@ -2,8 +2,8 @@
  * @Des          :
  * @Author       : liulib
  * @Date         : 2021-01-04 14:09:38
- * @LastEditors  : liulib
- * @LastEditTime : 2021-03-05 14:36:23
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2022-01-14 10:13:22
  */
 import {
   Entity,
@@ -18,8 +18,14 @@ import {
 import { User } from '../user/user.entity';
 import { Menu } from '../menu/menu.entity';
 
+import { ApiProperty } from '@nestjs/swagger';
+
 @Entity()
 export class Role {
+  @ApiProperty({
+    description: '角色id',
+    type: Number,
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
