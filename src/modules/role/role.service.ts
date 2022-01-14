@@ -26,61 +26,50 @@ export class RoleService {
     private readonly menuService: MenuService,
   ) {}
 
-  /**
-   * @description: 创建角色
-   * @param {*} role
-   * @return {*}
-   */
+  // 创建角色
   async create(cto: CreateRoleDto): Promise<ResponseData<null>> {
-    try {
-      // 判断角色是否存在
-      const role = await getRepository(Role)
-        .createQueryBuilder('role')
-        .where('role.roleName = :roleName', { roleName: cto.roleName })
-        .getOne();
-      if (role) {
-        return { code: 0, message: '角色名已存在' };
-      }
-      // 创建角色
-      await getRepository(Role)
-        .createQueryBuilder('role')
-        .insert()
-        .into(Role)
-        .values(cto)
-        .execute();
-      return { code: 1, message: '创建成功' };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.OK);
+    // 判断角色是否存在
+    const role = await getRepository(Role)
+      .createQueryBuilder('role')
+      .where('role.roleName = :roleName', {
+        roleName: cto.roleName,
+      })
+      .getOne();
+    if (role) {
+      return {
+        code: 0,
+        message: '角色名已存在',
+      };
+    }
+    // 创建角色
+    await getRepository(Role)
+      .createQueryBuilder('role')
+      .insert()
+      .into(Role)
+      .values(cto)
+      .execute();
+    return {
+      code: 1,
+      message: '创建成功',
+    };
+  }
+
+  // 更新角色
+  async update(uto: UpdateRoleDto): Promise<ResponseData<null>> {
+    const res = await getRepository(Role)
+      .createQueryBuilder('role')
+      .update()
+      .set(uto)
+      .where('role.id = :id', { id: uto.id })
+      .execute();
+    if (res.affected === 1) {
+      return { code: 1, message: '更新成功' };
+    } else {
+      return { code: 0, message: '更新失败' };
     }
   }
 
-  /**
-   * @description: 更新角色
-   * @param {UpdateRoleDto} uto
-   * @return {*}
-   */
-  async update(uto: UpdateRoleDto): Promise<ResponseData<null>> {
-    try {
-      const res = await getRepository(Role)
-        .createQueryBuilder('role')
-        .update()
-        .set(uto)
-        .where('role.id = :id', { id: uto.id })
-        .execute();
-      if (res.affected === 1) {
-        return { code: 1, message: '更新成功' };
-      } else {
-        return { code: 0, message: '更新失败' };
-      }
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.OK);
-    }
-  }
-  /**
-   * @description: 根据角色ID列表查询出角色列表 用于给用户分配角色
-   * @param {*}
-   * @return {*}
-   */
+  //根据角色ID列表查询出角色列表 用于给用户分配角色
   async findList(roleIdList: string[]): Promise<Role[]> {
     const queryOptionList = [];
     roleIdList.forEach(roleId => {
@@ -93,11 +82,7 @@ export class RoleService {
       .getMany();
   }
 
-  /**
-   * @description: 根据id查找角色
-   * @param {*}
-   * @return {*}
-   */
+  // 根据id查找角色
   async findOneById(id: number): Promise<Role> {
     const entity = await getRepository(Role)
       .createQueryBuilder('role')
@@ -110,56 +95,44 @@ export class RoleService {
     return entity;
   }
 
-  /**
-   * @description: 分页的角色列表
-   * @param {*}
-   * @return {*}
-   */
+  // 分页的角色列表
   async findListAndCount(
     queryOption: QueryRoleDto,
   ): Promise<ResponseData<pageData<Role>>> {
-    try {
-      const {
-        page = 1,
-        pageSize = 10,
-        roleName,
-        isDelete,
-        created,
-        updated,
-      } = queryOption;
+    const {
+      page = 1,
+      pageSize = 10,
+      roleName,
+      isDelete,
+      created,
+      updated,
+    } = queryOption;
 
-      const [number, size] = [Number(page), Number(pageSize)];
+    const [number, size] = [Number(page), Number(pageSize)];
 
-      const queryOptionList = [];
-      if (roleName) queryOptionList.push('role.roleName LIKE :roleName');
-      if (isDelete) queryOptionList.push('role.isDelete = :isDelete');
-      if (created) queryOptionList.push('role.created = :created');
-      if (updated) queryOptionList.push('role.updated = :updated');
-      const queryOptionStr = queryOptionList.join(' AND ');
+    const queryOptionList = [];
+    if (roleName) queryOptionList.push('role.roleName LIKE :roleName');
+    if (isDelete) queryOptionList.push('role.isDelete = :isDelete');
+    if (created) queryOptionList.push('role.created = :created');
+    if (updated) queryOptionList.push('role.updated = :updated');
+    const queryOptionStr = queryOptionList.join(' AND ');
 
-      const [list, total] = await getRepository(Role)
-        .createQueryBuilder('role')
-        .leftJoinAndSelect('role.menus', 'menu')
-        .where(queryOptionStr, queryOption)
-        .skip((number - 1) * size)
-        .take(size)
-        .getManyAndCount();
+    const [list, total] = await getRepository(Role)
+      .createQueryBuilder('role')
+      .leftJoinAndSelect('role.menus', 'menu')
+      .where(queryOptionStr, queryOption)
+      .skip((number - 1) * size)
+      .take(size)
+      .getManyAndCount();
 
-      return {
-        code: 1,
-        message: '查询成功',
-        data: { list, total, page: number, pageSize: size },
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.OK);
-    }
+    return {
+      code: 1,
+      message: '查询成功',
+      data: { list, total, page: number, pageSize: size },
+    };
   }
 
-  /**
-   * @description: 给角色赋权
-   * @param {*}
-   * @return {*}
-   */
+  // 给角色赋权
   async deployMenu(deployMenuDto: DeployMenuDto): Promise<ResponseData<null>> {
     const { id, menus } = deployMenuDto;
     let menuIdList = [];
@@ -168,7 +141,7 @@ export class RoleService {
     const role = await this.findOneById(id);
 
     // 判断角色是否存在
-    if (!role) throw new NotFoundException('角色不存在');
+    if (!role) return { code: 0, message: '角色不存在' };
 
     // 遍历菜单权限
     if (menus && menus.replace(/(^\s*)|(\s*$)/g, '') !== '') {
@@ -184,12 +157,11 @@ export class RoleService {
       }
       await entityManager.save(role);
     });
+
     return { code: 1, message: '分配权限成功' };
   }
 
-  /**
-   * @description: 查询全部角色
-   */
+  // 查询全部角色
   async findAll(): Promise<ResponseData<Role[]>> {
     const roleList = await getRepository(Role)
       .createQueryBuilder('role')

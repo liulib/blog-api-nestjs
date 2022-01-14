@@ -3,7 +3,7 @@
  * @Author       : liulib
  * @Date         : 2021-01-04 14:09:38
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2022-01-14 10:13:22
+ * @LastEditTime: 2022-01-14 14:24:57
  */
 import {
   Entity,
@@ -29,18 +29,38 @@ export class Role {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({
+    description: '角色名',
+    type: String,
+  })
   @Column({ comment: '角色名' })
   roleName: string;
 
-  @Column({ comment: '备注', nullable: true })
+  @ApiProperty({
+    description: '备注',
+    type: String,
+  })
+  @Column({ comment: '备注', default: '' })
   remark: string;
 
+  @ApiProperty({
+    description: '是否删除 1删除 0未删除',
+    type: Number,
+  })
   @Column({ comment: '是否删除 1删除 0未删除', default: 0 })
   isDelete: number;
 
+  @ApiProperty({
+    description: '创建时间',
+    type: String,
+  })
   @CreateDateColumn({ comment: '创建时间' })
   createdAt: string;
 
+  @ApiProperty({
+    description: '更新时间',
+    type: String,
+  })
   @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: string;
 
