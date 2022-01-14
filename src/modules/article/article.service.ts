@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -43,105 +38,102 @@ export class ArticleService {
     private readonly commentService: CommentService,
   ) {}
 
-  /**
-   * @description: 创建文章
-   * @param {CreateArticleDto} data
-   * @return {*}
-   */
+  // 创建文章
   async create(data: CreateArticleDto): Promise<ResponseData<null>> {
-    try {
-      const { tags = '', categoryId, ...others } = data;
-      let tagIdList = [];
-      // 遍历标签
-      if (tags.replace(/(^\s*)|(\s*$)/g, '') !== '') {
-        tagIdList = tags.split(',');
+    const { tags = '', categoryId, ...others } = data;
+    let tagIdList = [];
+    // 遍历标签
+    if (tags.replace(/(^\s*)|(\s*$)/g, '') !== '') {
+      tagIdList = tags.split(',');
+    }
+
+    await getManager().transaction(async (entityManager: EntityManager) => {
+      // 创建文章 这个效率低
+      const article = this.articleRepository.create({
+        ...others,
+      });
+      // 赋值标签
+      if (tagIdList.length > 0) {
+        article.tags = await this.tagService.findList(tagIdList);
+      } else {
+        article.tags = [];
+      }
+      // 赋值分类
+      const category = await this.categoryService.findOneById(categoryId);
+      if (!category) {
+        return {
+          code: 0,
+          message: '分类不存在',
+        };
+      }
+      article.category = category;
+      // 保存关联关系
+      await entityManager.save(article);
+    });
+    return {
+      code: 1,
+      message: '创建成功',
+    };
+  }
+
+  // 更新文章
+  async update(data: UpdateArticleDto): Promise<ResponseData<null>> {
+    // 解构数据
+    const { id, tags = '', categoryId, ...others } = data;
+    let tagIdList = [];
+    // 遍历标签
+    if (tags.replace(/(^\s*)|(\s*$)/g, '') !== '') tagIdList = tags.split(',');
+    // 开启事务处理数据库
+    await getManager().transaction(async (entityManager: EntityManager) => {
+      // 更新文章 这里不存在就不会有影响 所以不做结果验证了
+      await getConnection()
+        .createQueryBuilder()
+        .update(Article)
+        .set(others)
+        .where('id = :id', {
+          id: id,
+        })
+        .execute();
+
+      // 查询文章是否存在
+      const article = await getRepository(Article)
+        .createQueryBuilder('article')
+        .where('article.id = :id', {
+          id: id,
+        })
+        .getOne();
+      if (!article) {
+        return {
+          code: 0,
+          message: '文章不存在',
+        };
+      }
+      // 赋值标签
+      if (tagIdList.length > 0) {
+        article.tags = await this.tagService.findList(tagIdList);
+      } else {
+        article.tags = [];
+      }
+      // 赋值分类
+      const category = await this.categoryService.findOneById(categoryId);
+      if (!category) {
+        return {
+          code: 0,
+          message: '分类不存在',
+        };
       }
 
-      await getManager().transaction(async (entityManager: EntityManager) => {
-        // 创建文章 这个效率低
-        const article = this.articleRepository.create({
-          ...others,
-        });
-        // 赋值标签
-        if (tagIdList.length > 0) {
-          article.tags = await this.tagService.findList(tagIdList);
-        } else {
-          article.tags = [];
-        }
-        // 赋值分类
-        const category = await this.categoryService.findOneById(categoryId);
-        if (!category) throw new NotFoundException('分类不存在');
+      article.category = category;
 
-        article.category = category;
-
-        // 保存关联关系
-        await entityManager.save(article);
-      });
-      return {
-        code: 1,
-        message: '创建成功',
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+      await entityManager.save(article);
+    });
+    return {
+      code: 1,
+      message: '更新成功',
+    };
   }
 
-  /**
-   * @description: 更新文章
-   * @param {UpdateArticleDto} data
-   * @return {*}
-   */
-  async update(data: UpdateArticleDto): Promise<ResponseData<null>> {
-    try {
-      // 解构数据
-      const { id, tags = '', categoryId, ...others } = data;
-      let tagIdList = [];
-      // 遍历标签
-      if (tags.replace(/(^\s*)|(\s*$)/g, '') !== '')
-        tagIdList = tags.split(',');
-      // 开启事务处理数据库
-      await getManager().transaction(async (entityManager: EntityManager) => {
-        // 更新文章 这里不存在就不会有影响 所以不做结果验证了
-        await getConnection()
-          .createQueryBuilder()
-          .update(Article)
-          .set(others)
-          .where('id = :id', {
-            id: id,
-          })
-          .execute();
-
-        // 查询文章是否存在
-        const article = await getRepository(Article)
-          .createQueryBuilder('article')
-          .where('article.id = :id', {
-            id: id,
-          })
-          .getOne();
-        if (!article) throw new NotFoundException('文章不存在');
-        // 赋值标签
-        if (tagIdList.length > 0) {
-          article.tags = await this.tagService.findList(tagIdList);
-        } else {
-          article.tags = [];
-        }
-        // 赋值分类
-        const category = await this.categoryService.findOneById(categoryId);
-        if (!category) throw new NotFoundException('分类不存在');
-        article.category = category;
-        await entityManager.save(article);
-      });
-      return { code: 1, message: '更新成功' };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  /**
-   * @description: 根据条件查询分页的文章列表
-   * @param {QueryArticleOption} queryOption
-   * @return {*}
-   */
+  // 根据条件查询分页的文章列表
   async findListAndCount(
     queryOption: QueryArticleOptionDto,
   ): Promise<ResponseData<pageData<Article>>> {
@@ -196,11 +188,7 @@ export class ArticleService {
     };
   }
 
-  /**
-   * @description: 根据ID查询文章详情
-   * @param {*}
-   * @return {*}
-   */
+  // 根据ID查询文章详情
   async findDetailById(
     id: QueryArticleDetailDto,
     req,
@@ -221,13 +209,11 @@ export class ArticleService {
     this.v_logService.create(req);
 
     if (!article) return { code: 0, message: '查询失败，文章不存在' };
+
     return { code: 1, message: '查询成功', data: article };
   }
 
-  /**
-   * @description: 查询热门文章
-   */
-
+  // 查询热门文章
   async findTopicList() {
     const res = await getRepository(Article)
       .createQueryBuilder('article')
