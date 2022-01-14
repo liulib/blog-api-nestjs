@@ -2,8 +2,8 @@
  * @Des          :
  * @Author       : liulib
  * @Date         : 2020-11-28 11:55:55
- * @LastEditors  : Please set LastEditors
- * @LastEditTime : 2021-06-17 16:27:44
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2022-01-14 16:20:21
  */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -33,16 +33,16 @@ import customConfig from './config';
         configService.get('DATABASE_CONFIG'),
       inject: [ConfigService], // 记得注入服务，不然useFactory函数中获取不到ConfigService
     }),
+    AuthModule,
     UserModule,
     RoleModule,
     MenuModule,
-    AuthModule,
     ArticleModule,
     CategoryModule,
     CommentModule,
     TagModule,
-    IpModule,
     vLogModule,
+    IpModule,
   ],
   controllers: [],
   providers: [],

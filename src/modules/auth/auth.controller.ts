@@ -1,32 +1,28 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { User } from '@/common/decorators/user.decorator';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { PermissionGuard, Perms } from './perms.guard';
-
+@ApiTags('权限认证模块')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({
+    summary: '获取token，此接口暂时没用，本来预留用来刷新token的',
+  })
   @Post('getToken')
   async getToken(@Body() data: LoginDto) {
     const res = await this.authService.getToken(data);
     return res;
   }
 
+  @ApiOperation({
+    summary: '登录接口，返回token及菜单信息，具体接口看请求吧~~~',
+  })
   @Post('login')
   async login(@Body() data: LoginDto) {
-    const res = await this.authService.login(data);
-    return res;
-  }
-
-  @Get('test')
-  @UseGuards(AuthGuard('basic'), PermissionGuard)
-  @Perms('/system')
-  async test(@User() user) {
-    console.log(user);
-    return '验证';
+    return await this.authService.login(data);
   }
 }

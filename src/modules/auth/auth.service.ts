@@ -17,11 +17,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /**
-   * @description: 登录
-   * @param {LoginDto} data
-   * @return {*}
-   */
+  // 登录
   async login(data: LoginDto): Promise<ResponseData<LoginRes>> {
     const { account, password } = data;
     const entity = await this.userService.findDetailByName(account);
@@ -54,11 +50,7 @@ export class AuthService {
     };
   }
 
-  /**
-   * @description: 获取token
-   * @param {LoginDto} data
-   * @return {*}
-   */
+  // 获取token
   async getToken(data: LoginDto): Promise<ResponseData<string>> {
     const { account, password } = data;
 
@@ -88,11 +80,7 @@ export class AuthService {
     };
   }
 
-  /**
-   * @description: 签发token
-   * @param {JwtPayLoad} data
-   * @return {*}
-   */
+  // 签发token
   signToken(data: JwtPayLoad) {
     return this.jwtService.sign(data);
   }
