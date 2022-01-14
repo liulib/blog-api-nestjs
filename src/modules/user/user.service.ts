@@ -69,9 +69,9 @@ export class UserService {
         }
         // 保存关联关系
         await entityManager.save(user);
-
-        return true;
       });
+
+      return true;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

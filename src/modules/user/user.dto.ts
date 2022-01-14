@@ -12,10 +12,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { QueryOptionsDto } from '@/common/dto/queryOptionDto';
 import { Type } from 'class-transformer';
 
-import { User } from './user.entity';
-import { Role } from '../role/role.entity';
-import { Menu } from '../menu/menu.entity';
-
 export class CreateUserDto {
   @ApiProperty({ type: String, description: '用户名' })
   @IsNotEmpty({ message: '用户名不能为空' })
@@ -82,11 +78,66 @@ export class CreateUserDto {
   readonly isDelete?: number;
 }
 
-export class UpdateUserDto extends CreateUserDto {
+export class UpdateUserDto {
   @ApiProperty({ type: Number, description: '用户id' })
   @IsNotEmpty({ message: '用户id不能为空' })
   @IsNumber()
   readonly id: number;
+
+  @ApiPropertyOptional({
+    type: String,
+    description: '用户名',
+  })
+  @IsOptional()
+  @IsString()
+  readonly username?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    description: '邮箱',
+  })
+  @IsOptional()
+  @IsString()
+  readonly email?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    description: '手机号',
+  })
+  @IsOptional()
+  @IsString()
+  readonly mobile?: string;
+
+  @ApiProperty({ type: Number, description: '是否管理员  1是 0不是' })
+  @IsNotEmpty({ message: '是否是管理员不能为空' })
+  @IsNumber()
+  readonly ifManager: number;
+
+  @ApiProperty({ type: Number, description: '状态 1正常 0禁用' })
+  @IsNotEmpty({ message: '状态不能为空' })
+  @IsNumber()
+  readonly status: number;
+
+  @ApiPropertyOptional({
+    type: String,
+    description: '备注',
+  })
+  @IsOptional()
+  @IsString()
+  readonly remark?: string;
+
+  @ApiProperty({ type: Number, description: '是否删除 1删除 0未删除' })
+  @IsNotEmpty({ message: '是否删除不能为空' })
+  @IsNumber()
+  readonly isDelete: number;
+
+  @ApiPropertyOptional({
+    type: String,
+    description: '角色id字符串以,拼接 示例1,2,3,4,5',
+  })
+  @IsOptional()
+  @IsString()
+  readonly roles?: string;
 }
 
 export class UpdatePassWordDto {

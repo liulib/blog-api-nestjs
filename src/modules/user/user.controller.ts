@@ -31,6 +31,9 @@ export class UserController {
   @Post('create')
   async create(@Body() cto: CreateUserDto): Promise<ResponseData<null>> {
     const res = await this.userService.create(cto);
+    console.log('create');
+    console.log(res);
+
     if (res) {
       return { code: 1, message: '创建成功' };
     } else {
