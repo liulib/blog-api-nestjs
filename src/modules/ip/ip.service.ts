@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository } from 'typeorm';
 
@@ -15,11 +15,7 @@ export class IpService {
     private ipRepository: Repository<Ip>,
   ) {}
 
-  /**
-   * @description: 创建Ip
-   * @param {string} ipAddress
-   * @return {*}
-   */
+  // 创建Ip
   async create(ipAddress: string) {
     // 查找Ip
     const ip = this.findOneByAddress(ipAddress);
@@ -34,17 +30,13 @@ export class IpService {
     }
   }
 
-  /**
-   * @description: 更新Ip状态
-   * @param {*}
-   * @return {*}
-   */
+  // 更新Ip状态
   async update(uto: UpdateIpDto): Promise<ResponseData<null>> {
     const { id, status } = uto;
     // 查找Ip
     const ip = this.findOneById(id);
 
-    if (!ip) throw new NotFoundException('IP不存在');
+    if (!ip) return { code: 0, message: 'IP不存在' };
 
     const res = await getRepository(Ip)
       .createQueryBuilder('ip')
@@ -60,11 +52,7 @@ export class IpService {
     }
   }
 
-  /**
-   * @description: 根据ipAddress查找ip
-   * @param {string} ipAddress
-   * @return {*}
-   */
+  // 根据ipAddress查找ip
   async findOneByAddress(ipAddress: string): Promise<Ip> {
     return await getRepository(Ip)
       .createQueryBuilder('ip')
@@ -74,11 +62,7 @@ export class IpService {
       .getOne();
   }
 
-  /**
-   * @description: 根据id查找ip
-   * @param {number} id
-   * @return {*}
-   */
+  // 根据id查找ip
   async findOneById(id: number): Promise<Ip> {
     return await getRepository(Ip)
       .createQueryBuilder('ip')
@@ -86,11 +70,7 @@ export class IpService {
       .getOne();
   }
 
-  /**
-   * @description: 根据查找Ip 分页
-   * @param {*}
-   * @return {*}
-   */
+  // 根据查找Ip 分页
   async findListAndCount(
     queryOption: QueryOptionDto,
   ): Promise<ResponseData<pageData<Ip>>> {
