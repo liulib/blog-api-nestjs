@@ -26,7 +26,9 @@ async function bootstrap() {
     const options = new DocumentBuilder()
       .setTitle('blog文档')
       .setVersion('1.0')
-      .addTag('blog1.0')
+      .addTag(
+        'HTTP状态码正常处理 401未认证 403无权  返回数据中code为1表示业务正常 code为0表示业务异常',
+      )
       .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('doc', app, document);
