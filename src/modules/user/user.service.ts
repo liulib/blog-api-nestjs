@@ -19,6 +19,7 @@ import {
 import { RoleService } from '../role/role.service';
 
 import { ResponseData } from '@/common/interfaces/response.interface';
+import { pageData } from '@/common/interfaces/pageData.interface';
 
 import { hashPassword } from '@/common/utils/bcrypt';
 
@@ -31,7 +32,7 @@ export class UserService {
   ) {}
 
   // 创建用户
-  async create(data: CreateUserDto): Promise<boolean> {
+  async create(data: CreateUserDto): Promise<ResponseData<null>> {
     try {
       const { account, roles = '', password, ...others } = data;
       let roleIdList = [];
@@ -43,7 +44,7 @@ export class UserService {
         .getOne();
 
       if (user) {
-        return false;
+        return { code: 0, message: '该用户已存在' };
       }
 
       // 遍历角色
@@ -71,7 +72,7 @@ export class UserService {
         await entityManager.save(user);
       });
 
-      return true;
+      return { code: 1, message: '创建成功' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -110,7 +111,9 @@ export class UserService {
   }
 
   // 获取用户列表
-  async findListAndCount(queryOption: QueryUserDto) {
+  async findListAndCount(
+    queryOption: QueryUserDto,
+  ): Promise<ResponseData<pageData<User>>> {
     const {
       page = 1,
       pageSize = 10,
@@ -143,7 +146,13 @@ export class UserService {
       .take(size)
       .getManyAndCount();
 
-    return { list, total, page: number, pageSize: size };
+    const data = { list, total, page: number, pageSize: size };
+
+    return {
+      code: 1,
+      message: '查询成功',
+      data: data,
+    };
   }
 
   // 给用户分配角色;
@@ -174,22 +183,29 @@ export class UserService {
   }
 
   // 修改用户密码
-  async changePwd(changePDto: changePwdDto) {
+  async changePwd(changePDto: changePwdDto): Promise<ResponseData<null>> {
     const { id, password } = changePDto;
-    try {
-      // 检测用户是否存在
-      const toUpdate = await this.findOneById(id);
-      if (!toUpdate) return { code: 0, message: '用户不存在' };
+    // 检测用户是否存在
+    const toUpdate = await this.findOneById(id);
+    if (!toUpdate)
+      return {
+        code: 0,
+        message: '用户不存在',
+      };
 
-      // hash密码
-      const hashedPassword = hashPassword(password);
+    // hash密码
+    const hashedPassword = hashPassword(password);
 
-      const updated = Object.assign(toUpdate, { password: hashedPassword });
+    const updated = Object.assign(toUpdate, {
+      password: hashedPassword,
+    });
 
-      await getRepository(User).save(updated);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    await getRepository(User).save(updated);
+
+    return {
+      code: 1,
+      message: '修改成功',
+    };
   }
 
   // 更新用户
@@ -201,36 +217,44 @@ export class UserService {
       roleIdList = roles.split(',');
     }
 
-    await getManager().transaction(async (entityManager: EntityManager) => {
-      // 更新用户
-      // await entityManager.update(User, id, others);
-      // const toUpdate = await this.findOneById(id);
-      // const updated = Object.assign(toUpdate, others);
-      // await getRepository(User).save(updated);
-      await getConnection()
-        .createQueryBuilder()
-        .update(User)
-        .set(others)
-        .where('id = :id', { id: id })
-        .execute();
+    await getManager().transaction(
+      async (entityManager: EntityManager): Promise<ResponseData<null>> => {
+        // 更新用户
+        // await entityManager.update(User, id, others);
+        // const toUpdate = await this.findOneById(id);
+        // const updated = Object.assign(toUpdate, others);
+        // await getRepository(User).save(updated);
+        await getConnection()
+          .createQueryBuilder()
+          .update(User)
+          .set(others)
+          .where('id = :id', { id: id })
+          .execute();
 
-      // 查询用户是否存在
-      const user = await getRepository(User)
-        .createQueryBuilder('user')
-        .where('user.id = :id', {
-          id: id,
-        })
-        .getOne();
+        // 查询用户是否存在
+        const user = await getRepository(User)
+          .createQueryBuilder('user')
+          .where('user.id = :id', {
+            id: id,
+          })
+          .getOne();
 
-      if (!user) return { code: 0, message: '用户不存在' };
+        if (!user) return { code: 0, message: '用户不存在' };
 
-      // 赋值角色
-      if (roleIdList.length > 0) {
-        user.roles = await this.roleService.findList(roleIdList);
-      } else {
-        user.roles = [];
-      }
-      await entityManager.save(user);
-    });
+        // 赋值角色
+        if (roleIdList.length > 0) {
+          user.roles = await this.roleService.findList(roleIdList);
+        } else {
+          user.roles = [];
+        }
+
+        await entityManager.save(user);
+      },
+    );
+
+    return {
+      code: 1,
+      message: '修改成功',
+    };
   }
 }
