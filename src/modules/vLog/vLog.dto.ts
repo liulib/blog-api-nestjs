@@ -1,16 +1,19 @@
-import { IsString, IsOptional, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
-import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { QueryOptionsDto } from '@/common/dto/queryOptionDto';
-import { Type } from 'class-transformer';
 
 export class QueryOptionDto extends QueryOptionsDto {
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: String, description: 'ip地址', required: false })
   @IsOptional()
   @IsString()
   readonly ip: string;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({
+    type: String,
+    description: '请求地址',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   readonly url: string;
