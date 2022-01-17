@@ -257,4 +257,29 @@ export class UserService {
       message: '修改成功',
     };
   }
+
+  // 创建github用户
+  async createGithubUser(data) {
+    const account = String(data.id);
+    const username = String(data.login);
+    // hash密码 数据库未设置为空 直接使用账号做密码
+    const hashedPassword = hashPassword(account);
+
+    let userRes = null;
+
+    await getManager().transaction(async (entityManager: EntityManager) => {
+      // 创建用户 这个效率低
+      const user = this.userRepository.create({
+        account,
+        password: hashedPassword,
+        username,
+      });
+      // 赋值角色
+      user.roles = await this.roleService.findList(['3']);
+      // 保存关联关系
+      userRes = await entityManager.save(user);
+    });
+
+    return userRes;
+  }
 }

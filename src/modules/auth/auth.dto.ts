@@ -3,7 +3,7 @@
  * @Author       : liulib
  * @Date         : 2021-01-27 23:19:28
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2022-01-14 16:21:59
+ * @LastEditTime: 2022-01-16 22:18:43
  */
 import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -20,4 +20,15 @@ class LoginDto {
   readonly password: string;
 }
 
-export { LoginDto };
+class GithubLoginDto {
+  @ApiProperty({
+    type: String,
+    description: 'github返回的code',
+    required: true,
+  })
+  @IsNotEmpty({ message: 'code不能为空' })
+  @IsString()
+  code: string;
+}
+
+export { LoginDto, GithubLoginDto };

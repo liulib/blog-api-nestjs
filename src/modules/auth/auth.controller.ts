@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { LoginDto } from './auth.dto';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { LoginDto, GithubLoginDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -24,5 +23,13 @@ export class AuthController {
   @Post('login')
   async login(@Body() data: LoginDto) {
     return await this.authService.login(data);
+  }
+
+  @ApiOperation({
+    summary: 'github登录接口，返回token及菜单信息，具体接口看请求吧~~~',
+  })
+  @Get('githubLogin')
+  async githubLogin(@Query() data: GithubLoginDto) {
+    return await this.authService.githubLogin(data);
   }
 }

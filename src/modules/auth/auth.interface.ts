@@ -8,3 +8,18 @@ export interface LoginRes {
   menuList: any;
   username: string;
 }
+
+export interface GithubLoginRes {
+  token: string;
+  username: string;
+}
+
+export interface GithubRes {
+  access_token: string;
+  token_type: string;
+}
+
+export interface GithubUserInfo {
+  login: string;
+  id: string;
+}

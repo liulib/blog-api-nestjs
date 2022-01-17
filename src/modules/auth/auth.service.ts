@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './auth.dto';
-import { JwtPayLoad, LoginRes } from './auth.interface';
+import { JwtPayLoad, LoginRes, GithubLoginRes } from './auth.interface';
 import { JwtService } from '@nestjs/jwt';
 
 import { ResponseData } from '../../common/interfaces/response.interface';
-
 import { Menu } from '../menu/menu.entity';
-
 import { comparePassword } from '../../common/utils/bcrypt';
+import { GithubRes, GithubUserInfo } from './auth.interface';
+
+import * as superagent from 'superagent';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,72 @@ export class AuthService {
       code: 1,
       message: '登录成功',
       data: { token, menuList, username },
+    };
+  }
+
+  // github登录
+  async githubLogin(qto): Promise<ResponseData<GithubLoginRes>> {
+    const { code } = qto;
+
+    const client_id = '8cfd838ae6ab49046df7';
+    const client_secret = 'f4eafb9dc2c083185461ca861c438be94896d97a';
+    const access_token_url = 'https://github.com/login/oauth/access_token';
+    const fetch_user_url = 'https://api.github.com/user';
+
+    // 拿到 code， 请求 access_token
+    const result = await superagent.post(access_token_url).send({
+      code,
+      client_id,
+      client_secret,
+    });
+
+    // 返回带有 access_token 的字符串
+    const callbackUrl = result.text;
+
+    const params: GithubRes = {
+      access_token: '',
+      token_type: '',
+    };
+    const paramsStr = callbackUrl.replace(/\.*\?/, '');
+    paramsStr.split('&').forEach(v => {
+      const d = v.split('=');
+      if (d[1] && d[0]) params[d[0]] = d[1];
+    });
+
+    const { access_token } = params;
+
+    // 拿 token 取用户的数据
+    const userInfoRes = await superagent
+      .get(fetch_user_url)
+      .set('Authorization', `Bearer ${access_token}`)
+      .set(
+        'User-Agent',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36',
+      );
+
+    const userInfo: GithubUserInfo = JSON.parse(userInfoRes.text);
+
+    let entity = await this.userService.findDetailByName(String(userInfo.id));
+
+    if (!entity) {
+      entity = await this.userService.createGithubUser({
+        id: userInfo.id,
+        login: userInfo.login,
+      });
+    }
+
+    const { id, account } = entity;
+
+    // token
+    const token = this.signToken({ id, account });
+
+    return {
+      code: 1,
+      message: 'github登录成功',
+      data: {
+        token,
+        username: userInfo.login,
+      },
     };
   }
 
