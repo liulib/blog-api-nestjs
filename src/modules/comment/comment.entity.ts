@@ -39,6 +39,13 @@ export class Comment {
   userId: number;
 
   @ApiProperty({
+    description: '评论用户名',
+    type: String,
+  })
+  @Column({ comment: '评论用户名' })
+  username: string;
+
+  @ApiProperty({
     description: '评论文章ID',
     type: Number,
   })

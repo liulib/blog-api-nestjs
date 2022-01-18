@@ -4,7 +4,7 @@ import { Repository, getRepository } from 'typeorm';
 
 import { Comment } from './comment.entity';
 import { ResponseData } from '@/common/interfaces/response.interface';
-import { CreateCommentDto, QueryOptionDto } from './comment.dto';
+import { CreateCommentDto, QueryOptionDto, QueryAllDto } from './comment.dto';
 import { pageData } from '@/common/interfaces/pageData.interface';
 
 @Injectable()
@@ -17,9 +17,9 @@ export class CommentService {
   // 创建评论
   async create(data: CreateCommentDto, user): Promise<ResponseData<null>> {
     // 解构用户ID
-    const { id: userId } = user;
+    const { id: userId, username } = user;
     // 将用户ID合并到data中
-    Object.assign(data, { userId });
+    Object.assign(data, { userId, username });
     // 创建评论
     await getRepository(Comment)
       .createQueryBuilder('comment')
@@ -81,6 +81,49 @@ export class CommentService {
         page: number,
         pageSize: size,
       },
+    };
+  }
+
+  // 获取当前文章的评论不分页
+  async findAllByArticleId(
+    queryOption: QueryAllDto,
+  ): Promise<ResponseData<Comment[]>> {
+    const { articleId } = queryOption;
+
+    // 获取顶级评论
+    const list = await getRepository(Comment)
+      .createQueryBuilder('comment')
+      .where('comment.articleId = :articleId', { articleId })
+      .andWhere('comment.replyId = 0')
+      .orderBy('comment.createdAt', 'DESC')
+      .getMany();
+
+    // 递归查询子级评论
+    const subQuery = getRepository(Comment)
+      .createQueryBuilder('comment')
+      .where('comment.articleId = :articleId', { articleId })
+      .andWhere('comment.replyId = :replyId')
+      .orderBy('comment.createdAt');
+
+    // 递归函数
+    const recursionSubQuery = async list => {
+      for (const item of list) {
+        const subComments = await subQuery
+          .setParameter('replyId', item.id)
+          .getMany();
+        Object.assign(item, {
+          children: subComments,
+        });
+        if (subComments.length > 0) await recursionSubQuery(subComments);
+      }
+    };
+    // 递归
+    await recursionSubQuery(list);
+
+    return {
+      code: 1,
+      message: '查询成功',
+      data: list,
     };
   }
 

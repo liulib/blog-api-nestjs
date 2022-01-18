@@ -5,7 +5,7 @@ import { CommentService } from './comment.service';
 
 import { PermissionGuard, Perms } from '@/modules/auth/perms.guard';
 
-import { CreateCommentDto, QueryOptionDto } from './comment.dto';
+import { CreateCommentDto, QueryOptionDto, QueryAllDto } from './comment.dto';
 import { User } from '@/common/decorators/user.decorator';
 import { Comment } from './comment.entity';
 
@@ -33,5 +33,14 @@ export class CommentController {
   @Get('getList')
   async findListByArticleId(@Query() qto: QueryOptionDto) {
     return this.commentService.findListByArticleId(qto);
+  }
+
+  @ApiOperation({
+    summary: '查询评论不分页',
+  })
+  @ApiOkResponse({ type: Comment })
+  @Get('getAll')
+  async findAllByArticleId(@Query() qto: QueryAllDto) {
+    return this.commentService.findAllByArticleId(qto);
   }
 }

@@ -28,3 +28,11 @@ export class QueryOptionDto extends QueryOptionsDto {
   @IsNumber()
   readonly articleId: number;
 }
+
+export class QueryAllDto {
+  @ApiProperty({ type: Number, description: '文章ID', required: true })
+  @IsNotEmpty({ message: '文章ID不能为空' })
+  @Type(() => Number)
+  @IsNumber()
+  readonly articleId: number;
+}
