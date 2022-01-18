@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-
 import { InjectRepository } from '@nestjs/typeorm';
-
 import {
   Repository,
   getRepository,
@@ -200,17 +198,26 @@ export class ArticleService {
       .where('article.id = :id', id)
       .getOne();
 
+    if (!article) return { code: 0, message: '查询失败，文章不存在' };
+
+    // 将浏览量加1
     const updatedArticle = await this.articleRepository.merge(article, {
       viewCount: article.viewCount + 1,
     });
-    await this.articleRepository.save(updatedArticle);
+
+    this.articleRepository.save(updatedArticle);
 
     // 记录访问信息
     this.v_logService.create(req);
 
-    if (!article) return { code: 0, message: '查询失败，文章不存在' };
+    // 查询评论数
+    const data = JSON.parse(JSON.stringify(article));
 
-    return { code: 1, message: '查询成功', data: article };
+    data.commentCount = await this.commentService.countTotalByArticleId(
+      data.id,
+    );
+
+    return { code: 1, message: '查询成功', data };
   }
 
   // 查询热门文章
