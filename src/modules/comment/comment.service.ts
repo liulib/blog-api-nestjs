@@ -7,11 +7,14 @@ import { ResponseData } from '@/common/interfaces/response.interface';
 import { CreateCommentDto, QueryOptionDto, QueryAllDto } from './comment.dto';
 import { pageData } from '@/common/interfaces/pageData.interface';
 
+import { UserService } from '../user/user.service';
+
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
+    private readonly userService: UserService,
   ) {}
 
   // 创建评论
@@ -19,7 +22,7 @@ export class CommentService {
     // 解构用户ID
     const { id: userId, username } = user;
     // 将用户ID合并到data中
-    Object.assign(data, { userId, username });
+    Object.assign(data, { commentUserId: userId, commentUsername: username });
     // 创建评论
     await getRepository(Comment)
       .createQueryBuilder('comment')
@@ -98,6 +101,13 @@ export class CommentService {
       .orderBy('comment.createdAt', 'DESC')
       .getMany();
 
+    // 获取相关用户信息
+    for (let i = 0; i < list.length; i++) {
+      list[i]['commentUser'] = await this.userService.finUserInfoById(
+        list[i].commentUserId,
+      );
+    }
+
     // 递归查询子级评论
     const subQuery = getRepository(Comment)
       .createQueryBuilder('comment')
@@ -111,6 +121,19 @@ export class CommentService {
         const subComments = await subQuery
           .setParameter('replyId', item.id)
           .getMany();
+
+        // 获取相关用户信息
+        for (let i = 0; i < subComments.length; i++) {
+          subComments[i][
+            'commentUser'
+          ] = await this.userService.finUserInfoById(
+            subComments[i].commentUserId,
+          );
+          subComments[i]['replyUser'] = await this.userService.finUserInfoById(
+            subComments[i].replyUserId,
+          );
+        }
+
         Object.assign(item, {
           children: subComments,
         });

@@ -20,6 +20,12 @@ const config: IConfig = {
     synchronize: true,
     logging: true,
   },
+  GITHUB_OAUTH2: {
+    client_id: '8cfd838ae6ab49046df7',
+    client_secret: 'f4eafb9dc2c083185461ca861c438be94896d97a',
+    access_token_url: 'https://github.com/login/oauth/access_token',
+    fetch_user_url: 'https://api.github.com/user',
+  },
 };
 
 export default config;

@@ -49,6 +49,17 @@ export class User {
   email: string;
 
   @ApiProperty({
+    description: '头像',
+    type: String,
+  })
+  @Column({
+    comment: '头像',
+    default:
+      'https://i0.hdslb.com/bfs/face/member/noface.jpg@96w_96h_1c_1s.webp',
+  })
+  avatar: string;
+
+  @ApiProperty({
     description: '手机号',
     type: String,
   })

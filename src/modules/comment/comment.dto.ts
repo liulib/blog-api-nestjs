@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 import { QueryOptionsDto } from '@/common/dto/queryOptionDto';
@@ -19,6 +19,15 @@ export class CreateCommentDto {
   @IsNotEmpty({ message: '文章ID不能为空' })
   @IsNumber()
   readonly articleId: number;
+
+  @ApiProperty({
+    type: Number,
+    description: '回复给的用户id',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  readonly replyUserId: number;
 }
 
 export class QueryOptionDto extends QueryOptionsDto {

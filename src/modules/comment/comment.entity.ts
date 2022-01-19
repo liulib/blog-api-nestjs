@@ -36,14 +36,14 @@ export class Comment {
     type: Number,
   })
   @Column({ comment: '评论用户ID' })
-  userId: number;
+  commentUserId: number;
 
   @ApiProperty({
-    description: '评论用户名',
-    type: String,
+    description: '回复给的用户ID',
+    type: Number,
   })
-  @Column({ comment: '评论用户名' })
-  username: string;
+  @Column({ comment: '回复给的用户ID', default: 0 })
+  replyUserId: number;
 
   @ApiProperty({
     description: '评论文章ID',

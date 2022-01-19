@@ -56,6 +56,15 @@ export class CreateUserDto {
   @IsString()
   readonly email: string;
 
+  @ApiProperty({
+    type: String,
+    description: '头像url',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  readonly avatar: string;
+
   @ApiProperty({ type: String, description: '手机号', required: false })
   @IsOptional()
   @IsString()
@@ -117,6 +126,15 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   readonly email: string;
+
+  @ApiProperty({
+    type: String,
+    description: '头像url',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  readonly avatar: string;
 
   @ApiProperty({
     type: String,

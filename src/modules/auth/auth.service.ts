@@ -9,6 +9,8 @@ import { Menu } from '../menu/menu.entity';
 import { comparePassword } from '../../common/utils/bcrypt';
 import { GithubRes, GithubUserInfo } from './auth.interface';
 
+import config from '@/config';
+
 import * as superagent from 'superagent';
 
 @Injectable()
@@ -55,10 +57,10 @@ export class AuthService {
   async githubLogin(qto): Promise<ResponseData<GithubLoginRes>> {
     const { code } = qto;
 
-    const client_id = '8cfd838ae6ab49046df7';
-    const client_secret = 'f4eafb9dc2c083185461ca861c438be94896d97a';
-    const access_token_url = 'https://github.com/login/oauth/access_token';
-    const fetch_user_url = 'https://api.github.com/user';
+    const client_id = config().GITHUB_OAUTH2.client_id;
+    const client_secret = config().GITHUB_OAUTH2.client_secret;
+    const access_token_url = config().GITHUB_OAUTH2.access_token_url;
+    const fetch_user_url = config().GITHUB_OAUTH2.fetch_user_url;
 
     // 拿到 code， 请求 access_token
     const result = await superagent.post(access_token_url).send({
@@ -99,6 +101,7 @@ export class AuthService {
       entity = await this.userService.createGithubUser({
         id: userInfo.id,
         login: userInfo.login,
+        avatar_url: userInfo.avatar_url,
       });
     }
 

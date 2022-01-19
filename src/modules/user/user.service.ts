@@ -16,6 +16,8 @@ import {
   UpdateUserDto,
 } from './user.dto';
 
+import { GithubUserInfo } from '@/modules/auth/auth.interface';
+
 import { RoleService } from '../role/role.service';
 
 import { ResponseData } from '@/common/interfaces/response.interface';
@@ -259,9 +261,10 @@ export class UserService {
   }
 
   // 创建github用户
-  async createGithubUser(data) {
+  async createGithubUser(data: GithubUserInfo) {
     const account = String(data.id);
     const username = String(data.login);
+    const avatar = data.avatar_url;
     // hash密码 数据库未设置为空 直接使用账号做密码
     const hashedPassword = hashPassword(account);
 
@@ -273,6 +276,7 @@ export class UserService {
         account,
         password: hashedPassword,
         username,
+        avatar,
       });
       // 赋值角色
       user.roles = await this.roleService.findList(['3']);
@@ -281,5 +285,13 @@ export class UserService {
     });
 
     return userRes;
+  }
+
+  // 根据用户id查找用户 不带角色和菜单
+  async finUserInfoById(id: number): Promise<User> {
+    return await getRepository(User)
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id: id })
+      .getOne();
   }
 }

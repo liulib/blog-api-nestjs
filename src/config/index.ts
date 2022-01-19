@@ -5,6 +5,7 @@ export interface IConfig {
   port: number;
   enableSwagger: boolean;
   DATABASE_CONFIG: any;
+  GITHUB_OAUTH2: any;
 }
 
 const configs = {

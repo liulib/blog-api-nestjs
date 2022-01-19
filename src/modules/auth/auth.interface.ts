@@ -22,4 +22,5 @@ export interface GithubRes {
 export interface GithubUserInfo {
   login: string;
   id: string;
+  avatar_url: string;
 }
