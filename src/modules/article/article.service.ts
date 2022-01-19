@@ -198,7 +198,11 @@ export class ArticleService {
       .where('article.id = :id', id)
       .getOne();
 
-    if (!article) return { code: 0, message: '查询失败，文章不存在' };
+    if (!article)
+      return {
+        code: 0,
+        message: '查询失败，文章不存在',
+      };
 
     // 将浏览量加1
     const updatedArticle = await this.articleRepository.merge(article, {
@@ -207,8 +211,10 @@ export class ArticleService {
 
     this.articleRepository.save(updatedArticle);
 
-    // 记录访问信息
-    this.v_logService.create(req);
+    // 记录访问信息 开发模式下未开启nginx会报错 不创建
+    if (process.env.NODE_ENV !== 'development') {
+      this.v_logService.create(req);
+    }
 
     // 查询评论数
     const data = JSON.parse(JSON.stringify(article));
@@ -217,7 +223,11 @@ export class ArticleService {
       data.id,
     );
 
-    return { code: 1, message: '查询成功', data };
+    return {
+      code: 1,
+      message: '查询成功',
+      data,
+    };
   }
 
   // 查询热门文章
