@@ -93,6 +93,8 @@ COPY init.sql /docker-entrypoint-initdb.d #init.sql就是一些初始化的数�
 
 ## TODO
 
-- [ ] 编写归档功能接口
+- [x] 编写归档功能接口
+- [x] 完善评论接口
 - [ ] 编写数据统计功能接口
 - [ ] CI、CD
+- [ ] 写注释，规整代码
