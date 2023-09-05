@@ -12,6 +12,11 @@ export class CreateArticleDto {
   @IsString()
   readonly title: string;
 
+  @ApiProperty({ type: String, description: '文章url', required: true })
+  @IsNotEmpty({ message: '文章url' })
+  @IsString()
+  readonly url: string;
+
   @ApiProperty({ type: String, description: '文章简介', required: true })
   @IsNotEmpty({ message: '文章简介不能为空' })
   @IsString()
@@ -105,4 +110,12 @@ export class QueryArticleDetailDto {
   @Type(() => Number)
   @IsNumber()
   readonly id: number;
+}
+
+export class QueryArticleDetailByUrlDto {
+  @ApiProperty({ type: Number, description: '文章url' })
+  @IsNotEmpty({ message: '文章url不能为空' })
+  @Type(() => String)
+  @IsString()
+  readonly url: string;
 }

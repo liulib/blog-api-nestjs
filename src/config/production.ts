@@ -12,7 +12,7 @@ const config: IConfig = {
     host: 'mysql',
     port: 3306,
     username: 'root',
-    password: 'root',
+    password: 'Asd888----',
     database: 'blog-nestjs',
     timezone: 'UTC',
     charset: 'utf8mb4',

@@ -15,6 +15,7 @@ import {
   UpdateArticleDto,
   QueryArticleOptionDto,
   QueryArticleDetailDto,
+  QueryArticleDetailByUrlDto,
 } from './article.dto';
 
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -58,12 +59,33 @@ export class ArticleController {
   }
 
   @ApiOperation({
+    summary: '查询全部文章',
+  })
+  @ApiOkResponse({ type: Article })
+  @Get('getAll')
+  async findAll() {
+    return this.articleService.findAll();
+  }
+
+  @ApiOperation({
     summary: '查询文章详情',
   })
   @ApiOkResponse({ type: Article })
   @Get('getDetailById')
   async findDetailById(@Query() qto: QueryArticleDetailDto, @Request() req) {
     return this.articleService.findDetailById(qto, req);
+  }
+
+  @ApiOperation({
+    summary: '查询文章详情 - url',
+  })
+  @ApiOkResponse({ type: Article })
+  @Get('getDetailByUrl')
+  async findDetailByUrl(
+    @Query() qto: QueryArticleDetailByUrlDto,
+    @Request() req,
+  ) {
+    return this.articleService.findDetailByUrl(qto, req);
   }
 
   @ApiOperation({

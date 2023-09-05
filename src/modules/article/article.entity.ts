@@ -31,6 +31,13 @@ export class Article {
   title: string;
 
   @ApiProperty({
+    description: '文章url',
+    type: String,
+  })
+  @Column({ comment: '文章url', length: 128 })
+  url: string;
+
+  @ApiProperty({
     description: '文章简介',
     type: String,
   })

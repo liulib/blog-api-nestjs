@@ -18,6 +18,7 @@ import {
   UpdateArticleDto,
   QueryArticleOptionDto,
   QueryArticleDetailDto,
+  QueryArticleDetailByUrlDto,
 } from './article.dto';
 
 import { TagService } from '@/modules/tag/tag.service';
@@ -186,6 +187,31 @@ export class ArticleService {
     };
   }
 
+  // 不分页查询文章列表
+  async findAll() {
+    const list = await getRepository(Article)
+      .createQueryBuilder('article')
+      .where('article.isDelete = :isDelete', { isDelete: 0 })
+      .orderBy('article.createdAt', 'DESC')
+      .leftJoinAndSelect('article.tags', 'tags')
+      .leftJoinAndSelect('article.category', 'category')
+      .getMany();
+
+    // 遍历查询当前文章的评论数
+    // forEach无法使用async await
+    for (let i = 0; i < list.length; i++) {
+      list[i]['commentCount'] = await this.commentService.countTotalByArticleId(
+        list[i].id,
+      );
+    }
+
+    return {
+      code: 1,
+      message: '查询成功',
+      data: list,
+    };
+  }
+
   // 根据ID查询文章详情
   async findDetailById(
     id: QueryArticleDetailDto,
@@ -196,6 +222,50 @@ export class ArticleService {
       .leftJoinAndSelect('article.category', 'category')
       .leftJoinAndSelect('article.tags', 'tags')
       .where('article.id = :id', id)
+      .getOne();
+
+    if (!article)
+      return {
+        code: 0,
+        message: '查询失败，文章不存在',
+      };
+
+    // 将浏览量加1
+    const updatedArticle = await this.articleRepository.merge(article, {
+      viewCount: article.viewCount + 1,
+    });
+
+    this.articleRepository.save(updatedArticle);
+
+    // 记录访问信息 开发模式下未开启nginx会报错 不创建
+    if (process.env.NODE_ENV !== 'development') {
+      this.v_logService.create(req);
+    }
+
+    // 查询评论数
+    const data = JSON.parse(JSON.stringify(article));
+
+    data.commentCount = await this.commentService.countTotalByArticleId(
+      data.id,
+    );
+
+    return {
+      code: 1,
+      message: '查询成功',
+      data,
+    };
+  }
+
+  // 根据url查询文章详情
+  async findDetailByUrl(
+    url: QueryArticleDetailByUrlDto,
+    req,
+  ): Promise<ResponseData<Article>> {
+    const article = await getRepository(Article)
+      .createQueryBuilder('article')
+      .leftJoinAndSelect('article.category', 'category')
+      .leftJoinAndSelect('article.tags', 'tags')
+      .where('article.url = :url', url)
       .getOne();
 
     if (!article)
