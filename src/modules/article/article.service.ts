@@ -305,7 +305,7 @@ export class ArticleService {
     const res = await getRepository(Article)
       .createQueryBuilder('article')
       .orderBy('article.viewCount', 'DESC')
-      .select(['article.id', 'article.title'])
+      .select(['article.id', 'article.title', 'article.url'])
       .skip(0)
       .take(5)
       .getMany();
